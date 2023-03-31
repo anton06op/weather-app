@@ -2,10 +2,10 @@ import { useState } from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Button from 'react-bootstrap/Button';
-import TimeSelector from './TimeSelector';
-import Map from './Map';
 import './body.scss';
 import SearchBar from './SearchBar';
+import Now from './Tabs/Now';
+import Forecast from './Tabs/Forecast';
 
 function Body() {
 
@@ -29,12 +29,10 @@ function Body() {
         justify
       >
         <Tab eventKey="now" title="Now">
-          <TimeSelector id="now" />
-          <Map />
+          <Now />
         </Tab>
         <Tab eventKey="forecast" title="Forecast">
-          <TimeSelector id="forecast" />
-          <Map />
+          <Forecast />
         </Tab>
       </Tabs>
     </>
