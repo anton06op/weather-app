@@ -17,13 +17,14 @@ function TimeSelector({ data }) {
 
   const getCurrentData = useCallback((cbFn) => {
     data?.list.forEach(item => {
+
       const timestamp = item.dt;
       const momentDate = moment.unix(timestamp);
-
       const day = momentDate.format('DD');
       const hour = momentDate.format('HH:mm');
 
       cbFn(item, day, hour);
+
     });
   }, [data]);
 
@@ -41,17 +42,29 @@ function TimeSelector({ data }) {
     });
 
     setDays(days);
-    setHours(hours);
+    setHours(hours.sort());
     setSelectedDay(days[0]);
     setSelectedHour(hours[0]);
+
     if (data) setCurrentData(data.list[0]);
+
   }, [data, getCurrentData]);
 
   const handleOnChangeDays = (event) => {
     setSelectedDay(event.currentTarget.value);
+
     getCurrentData((item, day, hour) => {
-      if (selectedDay === day && selectedHour === hour) {
-        setCurrentData(item);
+      if (event.currentTarget.value === days[0]) {
+        const firstActiveHour = hours.find(hour => !checkDatePast(days[0], hour))
+        if (event.currentTarget.value === day && firstActiveHour === hour) {
+          setSelectedHour(firstActiveHour);
+          setCurrentData(item);
+        }
+      }
+      else {
+        if (event.currentTarget.value === day && selectedHour === hour) {
+          setCurrentData(item);
+        }
       }
     });
   };
@@ -59,11 +72,13 @@ function TimeSelector({ data }) {
   const handleOnChangeHours = (event) => {
     setSelectedHour(event.currentTarget.value);
     getCurrentData((item, day, hour) => {
-      if (selectedDay === day && selectedHour === hour) {
+      if (selectedDay === day && event.currentTarget.value === hour) {
         setCurrentData(item);
       }
     });
   };
+
+  const checkDatePast = (day, hour) => moment().unix() > moment(`${day} ${hour}`, 'DD HH:mm').unix();
 
   return (
     <>
@@ -94,6 +109,7 @@ function TimeSelector({ data }) {
             value={hour}
             checked={hour === selectedHour}
             onChange={handleOnChangeHours}
+            disabled={checkDatePast(days[0], hour) && selectedDay === days[0]}
           >
             {hour}
           </ToggleButton>
